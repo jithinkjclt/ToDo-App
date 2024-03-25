@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DataList extends StatefulWidget {
   const DataList({super.key});
@@ -14,6 +14,25 @@ class _DataListState extends State<DataList> {
   TextEditingController datactr = TextEditingController();
   TextEditingController editctr = TextEditingController();
 
+  setData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setStringList("store", data);
+  }
+
+  getData() async {
+    SharedPreferences shared = await SharedPreferences.getInstance();
+
+    setState(() {
+      data = shared.getStringList("store") ?? [];
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    getData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +44,7 @@ class _DataListState extends State<DataList> {
                   context: context,
                   builder: (context) {
                     return Builder(builder: (context) {
-                      return AlertDialog(
+                      return const AlertDialog(
                         content: Text("""1)Adding Tasks:
 Easily add new tasks to your list. Keep track of everything you need to do by simply inputting the task details.
 
@@ -40,25 +59,25 @@ Modify task details seamlessly by tapping on the respective task. Update descrip
                   },
                 );
               },
-              child: Icon(
+              child: const Icon(
                 Icons.info,
                 color: Colors.white,
               )),
-          SizedBox(
+          const SizedBox(
             width: 10,
           )
         ],
         leadingWidth: 100,
-        leading: SizedBox(
+        leading: const SizedBox(
           width: 100,
         ),
-        title: Text(
+        title: const Text(
           '      ToDo ',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
       ),
-      backgroundColor: Color(0xFF3718B7),
+      backgroundColor: const Color(0xFF3718B7),
       body: Column(
         children: [
           Expanded(
@@ -73,7 +92,7 @@ Modify task details seamlessly by tapping on the respective task. Update descrip
                             builder: (context) {
                               return AlertDialog(
                                   title: const Text("Edit"),
-                                  content: Container(
+                                  content: SizedBox(
                                     height: 170,
                                     child: Column(
                                       children: [
@@ -102,7 +121,7 @@ Modify task details seamlessly by tapping on the respective task. Update descrip
                                             width: 100,
                                             height: 50,
                                             decoration: BoxDecoration(
-                                                color: Color(0xFF3718B7),
+                                                color: const Color(0xFF3718B7),
                                                 borderRadius:
                                                     BorderRadius.circular(15)),
                                             child: const Center(
@@ -144,6 +163,8 @@ Modify task details seamlessly by tapping on the respective task. Update descrip
                                   const Spacer(),
                                   IconButton(
                                     onPressed: () {
+                                      setData();
+                                      setData();
                                       setState(() {
                                         data.removeAt(index); // Corrected line
                                       });
@@ -176,6 +197,7 @@ Modify task details seamlessly by tapping on the respective task. Update descrip
                     suffixIcon: datactr.text.isNotEmpty
                         ? IconButton(
                             onPressed: () {
+                              setData();
                               setState(() {
                                 data.add(datactr.text);
                                 datactr.clear();
